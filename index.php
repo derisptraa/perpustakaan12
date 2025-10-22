@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://kit.fontawesome.com/de8de52639.js" crossorigin="anonymous"></script>
-    <title>CuyPerpus.com</title>
+    <title>Perpustakaan12</title>
     <link rel="icon" href="assets/logoUrl.png" type="image/png">
   </head>
   <body>
@@ -35,8 +35,8 @@
     <section id="homeSection" class="p-5">
       <div class="d-flex flex-wrap justify-content-center">
         <div class="col mt-5">
-         <h2 class="fw-bold text-success"><span class="text-primary">Cuy</span>Perpus</h2>
-          <p class="mb-4">"Temukan Dunia Pengetahuan di Ujung Jari Anda: <br> Perpustakaan Online <span class="fw-bold">CuyPerpus</span> Membawa Anda ke Dunia Buku Digital."</p>
+         <h2 class="fw-bold text-success"><span class="text-primary">Ini</span>Perpus</h2>
+          <p class="mb-4">"Temukan Dunia Pengetahuan di Ujung Jari Anda: <br> Perpustakaan Online <span class="fw-bold">IniPerpus</span> Membawa Anda ke Dunia Buku Digital."</p>
           <a class="btn btn-primary" href="sign/link_login.html">Get started</a>
         </div>
         <div class="col mt-3">
@@ -50,11 +50,11 @@
           <div class="d-flex">
             <h2 class="text-primary">About</h2>
           </div>
-          <p>Kami percaya bahwa pengetahuan adalah kekuatan, dan setiap individu berhak mendapatkan akses ke sumber daya pendidikan yang berkualitas. 
-        Inilah sebabnya kami menciptakan aplikasi perpustakaan online kami, yang dirancang untuk menjadi pintu gerbang ke ribuan buku, artikel, 
-        dan sumber daya belajar lainnya, semuanya hanya dalam genggaman Anda. Kami berdedikasi untuk memajukan literasi dan pembelajaran seumur hidup, 
-        dan kami ingin menjadi mitra Anda dalam perjalanan pembelajaran Anda. Aplikasi perpustakaan kami telah dirancang dengan antarmuka yang ramah 
-        pengguna, fitur pencarian canggih, dan koleksi konten yang terus berkembang untuk menginspirasi dan memberdayakan semua anggota komunitas kami</p>
+          <p>Hidup bukan tentang seberapa cepat kita sampai di tujuan, tetapi tentang bagaimana kita terus melangkah meski jalannya terasa berat. 
+            Setiap kegagalan adalah pelajaran, setiap rintangan adalah kesempatan untuk tumbuh lebih kuat. 
+            Jangan biarkan keraguan menghentikan langkahmu, 
+            karena bahkan langkah kecil yang diambil dengan keyakinan bisa mengantarkanmu menuju hal besar. 
+            Percayalah, selama kamu masih berani mencoba, harapan itu selalu hidup. </p>
       </div>
       <div class="d-flex justify-content-center">
         <h3 class="text-secondary">Dikembangkan Oleh :</h3>
@@ -62,9 +62,11 @@
 
     <div class="d-flex justify-content-center flex-wrap gap-4 mt-4">
       <div class="card border-info mb-3" style="max-width: 18rem;">
-        <div class="card-header">Mangandaralam Sakti</div>
+        <div class="card-header"> Mahasiswa </div>
         <div class="card-body">
-          <h5 class="card-title">Student At SMKN 1 Jakarta</h5>
+          <h5 class="card-title">
+            <p> Deri Saputra </p>
+          </h5>
         </div>
       </div>
     </div>
@@ -78,8 +80,8 @@
       </div>
       <div class="row p-3">
         <div class="col mt-3">
-          <h3 class="text-light fs-5">Alamat</h3>
-          <p class="text-secondary fs-6">JL Budi Utomo Pasar Baru jakarta pusat</p>
+          <h3 class="text-light fs-5">UNJANI</h3>
+          <p class="text-secondary fs-6">CIMAHI</p>
         </div>
         <hr class="text-light mt-3">
         <div class="d-flex justify-content-center gap-4">
@@ -88,7 +90,7 @@
           <a href="" class="fs-3"><i class="fa-brands fa-instagram"></i></a>
         </div>
         <div class="d-flex justify-content-center align-items-center mt-3">
-          <p class="text-light">Made width ❤️ <a href="" class="text-decoration-none">Mangandaralam Sakti</a>  2023</p>
+          <p class="text-light">Made in  <a href="" class="text-decoration-none"> Sistem Informasi </a>  2025</p>
         </div>
       </div>
     </footer>

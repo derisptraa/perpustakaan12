@@ -1,0 +1,286 @@
+<?php
+$host = "127.0.0.1";
+$username = "root";
+$password = "";
+$database_name = "perpustakaan12";
+$connection = mysqli_connect($host, $username, $password, $database_name);
+
+// === FUNCTION KHUSUS ADMIN START ===
+
+// MENAMPILKAN DATA KATEGORI BUKU
+function queryReadData($dataKategori) {
+  global $connection;
+  $result = mysqli_query($connection, $dataKategori);
+  $items = [];
+  while($item = mysqli_fetch_assoc($result)) {
+    $items[] = $item;
+  }     
+  return $items;
+}
+
+// Menambahkan data buku 
+function tambahBuku($dataBuku) {
+  global $connection;
+
+  $cover = upload();
+  $idBuku = htmlspecialchars($dataBuku["id_buku"]);
+  $idKategori = htmlspecialchars($dataBuku["id_kategori"]); // Ambil `id_kategori` dari form
+  $judulBuku = htmlspecialchars($dataBuku["judul"]);
+  $pengarangBuku = htmlspecialchars($dataBuku["pengarang"]);
+  $penerbitBuku = htmlspecialchars($dataBuku["penerbit"]);
+  $tahunTerbit = htmlspecialchars($dataBuku["tahun_terbit"]);
+  $jumlahHalaman = htmlspecialchars($dataBuku["jumlah_halaman"]);
+  $deskripsiBuku = htmlspecialchars($dataBuku["buku_deskripsi"]);
+
+  if (!$cover) {
+      return 0;
+  }
+
+  $queryInsertDataBuku = "INSERT INTO buku (cover, id_buku, id_kategori, judul, pengarang, penerbit, tahun_terbit, jumlah_halaman, buku_deskripsi) 
+                          VALUES ('$cover', '$idBuku', '$idKategori', '$judulBuku', '$pengarangBuku', '$penerbitBuku', '$tahunTerbit', $jumlahHalaman, '$deskripsiBuku')";
+
+  mysqli_query($connection, $queryInsertDataBuku);
+  return mysqli_affected_rows($connection);
+}
+
+// Function upload gambar 
+function upload() {
+  $namaFile = $_FILES["cover"]["name"];
+  $ukuranFile = $_FILES["cover"]["size"];
+  $error = $_FILES["cover"]["error"];
+  $tmpName = $_FILES["cover"]["tmp_name"];
+  
+  // cek apakah ada gambar yg diupload
+  if($error === 4) {
+    echo "<script>
+    alert('Silahkan upload cover buku terlebih dahulu!')
+    </script>";
+    return 0;
+  }
+  
+  // cek kesesuaian format gambar
+  $jpg = "jpg";
+  $jpeg = "jpeg";
+  $png = "png";
+  $svg = "svg";
+  $bmp = "bmp";
+  $psd = "psd";
+  $tiff = "tiff";
+  $formatGambarValid = [$jpg, $jpeg, $png, $svg, $bmp, $psd, $tiff];
+  $ekstensiGambar = explode('.', $namaFile);
+  $ekstensiGambar = strtolower(end($ekstensiGambar));
+  
+  if(!in_array($ekstensiGambar, $formatGambarValid)) {
+    echo "<script>
+    alert('Format file tidak sesuai');
+    </script>";
+    return 0;
+  }
+  
+  // batas ukuran file
+  if($ukuranFile > 2000000) {
+    echo "<script>
+    alert('Ukuran file terlalu besar!');
+    </script>";
+    return 0;
+  }
+  
+   //generate nama file baru, agar nama file tdk ada yg sama
+  $namaFileBaru = uniqid();
+  $namaFileBaru .= ".";
+  $namaFileBaru .= $ekstensiGambar;
+  
+  move_uploaded_file($tmpName, '../../imgDB/' . $namaFileBaru);
+  return $namaFileBaru;
+} 
+
+// MENAMPILKAN SESUATU SESUAI DENGAN INPUTAN USER PADA * SEARCH ENGINE *
+function search($keyword) {
+  // search data buku
+  $querySearch = "
+  SELECT buku.*, kategori_buku.nama_kategori AS kategori
+  FROM buku
+  JOIN kategori_buku ON buku.id_kategori = kategori_buku.id_kategori
+  WHERE
+  buku.judul LIKE '%$keyword%' OR
+  kategori_buku.nama_kategori LIKE '%$keyword%'
+";
+return queryReadData($querySearch);
+  
+  // search data pengembalian || member
+  $dataPengembalian = "SELECT * FROM pengembalian 
+  WHERE 
+  id_pengembalian '%$keyword%' OR
+  id_buku LIKE '%$keyword%' OR
+  judul LIKE '%$keyword%' OR
+  kategori LIKE '%$keyword%' OR
+  nisn LIKE '%$keyword%' OR
+  nama LIKE '%$keyword%' OR
+  nama_admin LIKE '%$keyword%' OR
+  tgl_pengembalian LIKE '%$keyword%' OR
+  keterlambatan LIKE '%$keyword%' OR
+  denda LIKE '%$keyword%'";
+  return queryReadData($dataPengembalian);
+}
+
+function searchMember ($keyword) {
+     // search member terdaftar || admin
+   $searchMember = "SELECT * FROM member WHERE 
+   nisn LIKE '%$keyword%' OR 
+   nama LIKE '%$keyword%' OR 
+   jurusan LIKE '%$keyword%'
+   ";
+   return queryReadData($searchMember);
+}
+
+
+// DELETE DATA Buku
+function delete($bukuId) {
+  global $connection;
+  $queryDeleteBuku = "DELETE FROM buku WHERE id_buku = '$bukuId'
+  ";
+  mysqli_query($connection, $queryDeleteBuku);
+  
+  return mysqli_affected_rows($connection);
+}
+
+// UPDATE || EDIT DATA BUKU 
+function updateBuku($dataBuku) {
+  global $connection;
+
+  $gambarLama = htmlspecialchars($dataBuku["coverLama"]);
+  $idBuku = htmlspecialchars($dataBuku["id_buku"]);
+  $kategoriBuku = $dataBuku["kategori"];
+  $judulBuku = htmlspecialchars($dataBuku["judul"]);
+  $pengarangBuku = htmlspecialchars($dataBuku["pengarang"]);
+  $penerbitBuku = htmlspecialchars($dataBuku["penerbit"]);
+  $tahunTerbit = $dataBuku["tahun_terbit"];
+  $jumlahHalaman = $dataBuku["jumlah_halaman"];
+  $deskripsiBuku = htmlspecialchars($dataBuku["buku_deskripsi"]);
+  
+  
+  // pengecekan mengganti gambar || tidak
+  if($_FILES["cover"]["error"] === 4) {
+    $cover = $gambarLama;
+  }else {
+    $cover = upload();
+  }
+  // 4 === gagal upload gambar
+  // 0 === berhasil upload gambar
+  
+  $queryUpdate = "UPDATE buku SET 
+  cover = '$cover',
+  id_buku = '$idBuku',
+  kategori = '$kategoriBuku',
+  judul = '$judulBuku',
+  pengarang = '$pengarangBuku',
+  penerbit = '$penerbitBuku',
+  tahun_terbit = '$tahunTerbit',
+  jumlah_halaman = $jumlahHalaman,
+  buku_deskripsi = '$deskripsiBuku'
+  WHERE id_buku = '$idBuku'
+  ";
+  
+  mysqli_query($connection, $queryUpdate);
+  return mysqli_affected_rows($connection);
+}
+
+// Hapus member yang terdaftar
+function deleteMember($nisnMember) {
+  global $connection;
+  
+  $deleteMember = "DELETE FROM member WHERE nisn = $nisnMember";
+  mysqli_query($connection, $deleteMember);
+  return mysqli_affected_rows($connection);
+}
+
+// Hapus history pengembalian data BUKU
+function deleteDataPengembalian($idPengembalian) {
+  global $connection;
+  
+  $deleteDataPengembalianBuku = "DELETE FROM pengembalian WHERE id_pengembalian = $idPengembalian";
+  mysqli_query($connection, $deleteDataPengembalianBuku);
+  return mysqli_affected_rows($connection);
+}
+
+
+// === FUNCTION KHUSUS ADMIN END ===
+
+
+// === FUNCTION KHUSUS MEMBER START ===
+// Peminjaman BUKU
+function pinjamBuku($dataBuku) {
+  global $connection;
+
+  $idBuku = $dataBuku["id_buku"];
+  $nisn = $dataBuku["nisn"];
+  $idAdmin = $dataBuku["id"];
+  $tglPinjam = $dataBuku["tgl_peminjaman"];
+  $tglKembali = $dataBuku["tgl_pengembalian"];
+  
+  // Cek apakah buku sudah dipinjam dan belum dikembalikan
+  $cekBuku = mysqli_query($connection, "SELECT * FROM peminjaman WHERE id_buku = '$idBuku' AND nisn = '$nisn' AND status_peminjaman = 'belum dikembalikan'");
+  if (mysqli_num_rows($cekBuku) > 0) {
+      echo "<script>
+      alert('Anda sudah meminjam buku ini, silahkan pilih buku lain!');
+      </script>";
+      return 0;
+  }
+
+  // Tambahkan peminjaman baru
+  $queryPinjam = "INSERT INTO peminjaman (id_buku, nisn, id_admin, tgl_peminjaman, tgl_pengembalian, status_peminjaman) 
+                  VALUES ('$idBuku', '$nisn', '$idAdmin', '$tglPinjam', '$tglKembali', 'belum dikembalikan')";
+  mysqli_query($connection, $queryPinjam);
+  return mysqli_affected_rows($connection);
+}
+
+
+
+// Pengembalian BUKU
+function pengembalian($dataBuku) {
+  global $connection;
+  
+  // Variabel pengembalian
+  $idPeminjaman = $dataBuku["id_peminjaman"];
+  $idBuku = $dataBuku["id_buku"];
+  $nisn = $dataBuku["nisn"];
+  $idAdmin = $dataBuku["id_admin"];
+  $tenggatPengembalian = $dataBuku["tgl_pengembalian"];
+  $bukuKembali = $dataBuku["buku_kembali"];
+  $keterlambatan = $dataBuku["keterlambatan"];
+  $denda = $dataBuku["denda"];
+  
+  if($bukuKembali > $tenggatPengembalian) {
+    echo "<script>
+    alert('Anda terlambat mengembalikan buku, harap bayar denda sesuai dengan jumlah yang ditentukan!');
+    </script>";
+  }
+  
+  // Menghapus data siswa yang sudah mengembalikan buku
+  $hapusDataPeminjam = "DELETE FROM peminjaman WHERE id_peminjaman = $idPeminjaman";
+
+  // Memasukkan data kedalam tabel pengembalian
+  $queryPengembalian = "INSERT INTO pengembalian VALUES(null, $idPeminjaman, '$idBuku', $nisn, $idAdmin, '$bukuKembali', '$keterlambatan', $denda)";
+
+  
+  mysqli_query($connection, $hapusDataPeminjam);
+  mysqli_query($connection, $queryPengembalian);
+  return mysqli_affected_rows($connection);
+}
+
+function bayarDenda($data) {
+  global $connection;
+  $idPengembalian = $data["id_pengembalian"];
+  $jmlDenda = $data["denda"];
+  $jmlDibayar = $data["bayarDenda"];
+  $calculate = $jmlDenda - $jmlDibayar;
+  
+  $bayarDenda = "UPDATE pengembalian SET denda = $calculate WHERE id_pengembalian = $idPengembalian";
+  mysqli_query($connection, $bayarDenda);
+  return mysqli_affected_rows($connection);
+}
+
+// === FUNCTION KHUSUS MEMBER END ===
+?>
+
+
